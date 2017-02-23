@@ -32,6 +32,12 @@
 
 #include <trace/events/block.h>
 
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0) /* BFQ backport fixup */
+#define bio_associate_blkcg(a, b) 0
+#endif
+
+
 /*
  * Test patch to inline a certain number of bi_io_vec's inside the bio
  * itself, to shrink a bio data allocation from two mempool calls to one
@@ -569,6 +575,7 @@ void __bio_clone_fast(struct bio *bio, struct bio *bio_src)
 	bio->bi_iter = bio_src->bi_iter;
 	bio->bi_io_vec = bio_src->bi_io_vec;
 	bio->bi_dio_inode = bio_src->bi_dio_inode;
+	bio_clone_blkcg_association(bio, bio_src);
 }
 EXPORT_SYMBOL(__bio_clone_fast);
 
@@ -673,6 +680,8 @@ integrity_clone:
 			return NULL;
 		}
 	}
+
+	bio_clone_blkcg_association(bio, bio_src);
 
 	return bio;
 }
@@ -2052,6 +2061,17 @@ void bio_disassociate_task(struct bio *bio)
 		css_put(bio->bi_css);
 		bio->bi_css = NULL;
 	}
+}
+
+/**
+ * bio_clone_blkcg_association - clone blkcg association from src to dst bio
+ * @dst: destination bio
+ * @src: source bio
+ */
+void bio_clone_blkcg_association(struct bio *dst, struct bio *src)
+{
+	if (src->bi_css)
+		WARN_ON(bio_associate_blkcg(dst, src->bi_css));
 }
 
 #endif /* CONFIG_BLK_CGROUP */
