@@ -624,7 +624,6 @@ KBUILD_AFLAGS	+= $(call cc-option,-fno-PIE)
 
 # GCC 7.x warnings
 KBUILD_CFLAGS	+= $(call cc-disable-warning, bool-operation)
-KBUILD_CFLAGS	+= $(call cc-disable-warning, duplicate-decl-specifier)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, memset-elt-size)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, parentheses)
 
