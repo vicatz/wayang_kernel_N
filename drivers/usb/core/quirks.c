@@ -196,6 +196,10 @@ static const struct usb_device_id usb_quirk_list[] = {
 	/* USB3503 */
 	{ USB_DEVICE(0x0424, 0x3503), .driver_info = USB_QUIRK_RESET_RESUME },
 
+	/* MIDI keyboard WORLDE MINI */
+	{ USB_DEVICE(0x1c75, 0x0204), .driver_info =
+			USB_QUIRK_CONFIG_INTF_STRINGS },
+
 	/* ASUS Base Station(T100) */
 	{ USB_DEVICE(0x0b05, 0x17e0), .driver_info =
 			USB_QUIRK_IGNORE_REMOTE_WAKEUP },
