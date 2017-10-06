@@ -293,13 +293,18 @@ static int xhci_stop_device(struct xhci_hcd *xhci, int slot_id, int suspend)
 						     GFP_NOWAIT);
 			if (!command) {
 				spin_unlock_irqrestore(&xhci->lock, flags);
-				xhci_free_command(xhci, cmd);
-				return -ENOMEM;
-
+				ret = -ENOMEM;
+				goto cmd_cleanup;
 			}
 
 			ret = xhci_queue_stop_endpoint(xhci, command, slot_id,
-					i, suspend);
+						       i, suspend);
+			if (ret) {
+				spin_unlock_irqrestore(&xhci->lock, flags);
+				xhci_free_command(xhci, command);
+				goto cmd_cleanup;
+			}
+
 			if (ret) {
 				spin_unlock_irqrestore(&xhci->lock, flags);
 				goto err_cmd_queue;
@@ -310,7 +315,9 @@ static int xhci_stop_device(struct xhci_hcd *xhci, int slot_id, int suspend)
 	if (ret) {
 		spin_unlock_irqrestore(&xhci->lock, flags);
 		goto err_cmd_queue;
+		goto cmd_cleanup;
 	}
+
 	xhci_ring_cmd_db(xhci);
 	spin_unlock_irqrestore(&xhci->lock, flags);
 
@@ -323,6 +330,7 @@ static int xhci_stop_device(struct xhci_hcd *xhci, int slot_id, int suspend)
 	}
 
 err_cmd_queue:
+cmd_cleanup:
 	xhci_free_command(xhci, cmd);
 	return ret;
 }
