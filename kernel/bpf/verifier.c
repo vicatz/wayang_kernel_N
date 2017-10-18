@@ -392,6 +392,7 @@ static void print_bpf_insn(const struct bpf_verifier_env *env,
 				imm = 0;
 
 			verbose("(%02x) r%d = 0x%llx\n", insn->code,
+				insn->dst_reg, (unsigned long long)imm);
 		} else {
 			verbose("BUG_ld_%02x\n", insn->code);
 			return;
