@@ -15,3 +15,10 @@ clean::
 	rm -rf .tmp_versions
 
 
+subdir-ccflags-y += \
+	-Wno-array-bounds \
+	-Wno-empty-body \
+	-Wno-enum-conversion \
+	-Wno-non-literal-null-conversion \
+	-Wno-parentheses-equality \
+	-Wno-typedef-redefinition
