@@ -28,7 +28,7 @@
 DECLARE_HASHTABLE(uid_hash_table, UID_HASH_BITS);
 
 static spinlock_t cpufreq_stats_lock;
-
+static DEFINE_SPINLOCK(cpufreq_stats_table_lock);
 static DEFINE_RT_MUTEX(uid_lock); /* uid_hash_table */
 
 struct uid_entry {
@@ -648,8 +648,18 @@ error_alloc:
 
 static void cpufreq_stats_update_policy_cpu(struct cpufreq_policy *policy)
 {
-	struct cpufreq_stats *stat = per_cpu(cpufreq_stats_table,
-			policy->last_cpu);
+	struct cpufreq_stats *old;
+	struct cpufreq_stats *stat;
+	unsigned long flags;
+
+	spin_lock_irqsave(&cpufreq_stats_table_lock, flags);
+	old = per_cpu(cpufreq_stats_table, policy->cpu);
+	stat = per_cpu(cpufreq_stats_table, policy->last_cpu);
+
+	if (old) {
+		kfree(old->time_in_state);
+		kfree(old);
+	}
 
 	pr_debug("Updating stats_table for new_cpu %u from last_cpu %u\n",
 			policy->cpu, policy->last_cpu);
@@ -657,6 +667,7 @@ static void cpufreq_stats_update_policy_cpu(struct cpufreq_policy *policy)
 			policy->last_cpu);
 	per_cpu(cpufreq_stats_table, policy->last_cpu) = NULL;
 	stat->cpu = policy->cpu;
+	spin_unlock_irqrestore(&cpufreq_stats_table_lock, flags);
 }
 
 static void cpufreq_powerstats_create(unsigned int cpu,
@@ -1005,6 +1016,8 @@ static int __init cpufreq_stats_init(void)
 	create_all_freq_table();
 
 	get_online_cpus();
+	create_all_freq_table();
+
 	for_each_online_cpu(cpu)
 		cpufreq_stats_create_table(cpu);
 	put_online_cpus();
@@ -1026,7 +1039,6 @@ static int __init cpufreq_stats_init(void)
 		return ret;
 	}
 
-	create_all_freq_table();
 	WARN_ON(cpufreq_get_global_kobject());
 	ret = sysfs_create_file(cpufreq_global_kobject,
 			&_attr_all_time_in_state.attr);
