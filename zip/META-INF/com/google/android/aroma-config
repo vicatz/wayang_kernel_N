@@ -1,0 +1,101 @@
+ini_set("rom_name",             "Wayang™");
+ini_set("rom_version",          "v1.4");
+ini_set("rom_author",           "vicatz@xda");
+ini_set("rom_device",           "Mido_N-Los/Aosp");
+ini_set("rom_date",             "March 22, 2018");
+
+ini_set("force_colorspace","rgba");
+#ini_set("dp","6");
+
+fontresload( "0", "ttf/Roboto-Regular.ttf", "12" );
+fontresload( "1", "ttf/Roboto-Regular.ttf", "16" ); 
+
+splash(2000, "wayang");
+
+theme("assassinx");
+
+viewbox(
+    "\nWayang Kernel Mido",
+
+    "<@center><b>\n" + ini_get("rom_device") + "</b>\n\n</@>" +
+    "\n\n\n\n  VERSION\t: <b><#selectbg_g>"+ini_get("rom_version")+"</#></b>\n" +
+    "  AUTHOR \t: <b><#selectbg_g>"+ini_get("rom_author")+"</#></b>\n" +
+    "  RELEASED\t: <b><#selectbg_g>"+ini_get("rom_date")+"</#></b>\n\n\n" +
+    "Press Next to Continue...",
+
+    "@welcome"
+);
+
+agreebox(
+   "\nTerms Of Use",
+   "<@center>\nPlease read the Wayang terms of use\n\n</@>",
+   "",
+   "" + readfile_aroma("agreement.txt"),
+   "I agree with these terms of use",
+   "<@center>\nYou must accept the terms</@>"
+);
+
+alert(
+  "WARNING!!!:",
+  "For best experience -\n\n1.Don't flash over other kernels. Ensure that you either have a previous version of Wayang or the kernel that came with your rom.\n\n",
+  "@warning",
+  "OK"
+);
+
+
+checkbox(
+  "\nOther settings","<@center><b>\nSelect the mods you want to install</b>\n\n</@>","","mods.prop",
+  "Disable fsync","Faster fileystem performance, but risk of data loss",0,
+  "USB fastcharge","Increase charge current while charging via USB",0,
+  "White flash","Force flash lamp using white",0
+);
+
+menubox(
+  "\nWayang Installer",
+  "<@center>\nReady to install\n\n</@>",
+  "",
+  "menu.prop",
+  "Install Wayang","","@install",
+  "Abort installation","","@trash"
+);
+
+if prop("menu.prop","selected")=="2"
+then
+  exit("");
+endif;
+
+setvar("retstatus",
+install(
+  "\nInstalling",
+  "<@center>\nInstalling Wayang Kernel For Nougat-Los/Aosp\nPlease wait</@>",
+  "")
+);
+
+ini_set("text_next", "Finish");
+
+if getvar("retstatus")=="0" then
+checkviewbox(
+    "Installation Completed",
+  
+    "<#selectbg_g><b>Congratulations...</b></#>\n\n"+
+    "<b>"+ini_get("rom_name")+"</b> has been installed into your device.\n\n"+
+    "Installer Status: "+getvar("retstatus")+"\n\n",
+	
+    "@welcome",
+
+    "Reboot po ora? Lek iyo centangen kuwi :v .",
+
+    "0",
+
+    "reboot_it"
+);
+  
+else
+   viewbox("Installation Failed","\n\nInstaller Status: "+ getvar("retstatus"),"@warning");
+endif;
+
+if
+  getvar("reboot_it")=="1"
+then
+  reboot("onfinish");
+endif;
