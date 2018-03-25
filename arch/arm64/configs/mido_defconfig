@@ -45,6 +45,9 @@ CONFIG_BOEFFLA_WL_BLOCKER=y
 #Wireguard
 CONFIG_WIREGUARD=y
 
+#State Notifier
+CONFIG_STATE_NOTIFIER=y
+
 #
 # General setup
 #
