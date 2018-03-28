@@ -1,6 +1,6 @@
 #!/bin/bash
 kernel_dir=$PWD
-export V="v1.4"
+export V="v1.5"
 export CONFIG_FILE="mido_defconfig"
 export ARCH=arm64
 export SUBARCH=arm64
