@@ -1,8 +1,8 @@
 ini_set("rom_name",             "Wayang™");
-ini_set("rom_version",          "v1.4");
+ini_set("rom_version",          "v1.5");
 ini_set("rom_author",           "vicatz@xda");
 ini_set("rom_device",           "Mido-Miui");
-ini_set("rom_date",             "March 20, 2018");
+ini_set("rom_date",             "March 29, 2018");
 
 ini_set("force_colorspace","rgba");
 #ini_set("dp","6");
