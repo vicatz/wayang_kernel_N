@@ -40,6 +40,9 @@ on enable-eas-power
     write /sys/block/mmcblk1/queue/read_ahead_kb 1024
     chmod 0444 /sys/block/mmcblk1/queue/read_ahead_kb
     setprop sys.io.scheduler maple
+    
+    # Disable adaptive LMK by default
+    write /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk 0
 
     # Reduce RGB values to 75% to reduce effect of screen retention issue on Tianma panel
     write /sys/devices/platform/kcal_ctrl.0/kcal "192 192 192"
