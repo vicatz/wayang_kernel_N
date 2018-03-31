@@ -48,6 +48,9 @@ CONFIG_WIREGUARD=y
 #State Notifier
 CONFIG_STATE_NOTIFIER=y
 
+#Fingerprint boost
+CONFIG_FINGERPRINT_BOOST=y
+
 #
 # General setup
 #
